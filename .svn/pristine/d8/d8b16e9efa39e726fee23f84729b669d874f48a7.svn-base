@@ -1,0 +1,110 @@
+<#assign className = table.className>   
+<#assign classNameLower = className?uncap_first> 
+
+package ${basepackage}.${classNameLower}.dao.impl;
+
+
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.springframework.stereotype.Repository;
+
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import com.minstone.common.util.Tools;
+
+import ${basepackage}.${classNameLower}.dao.${className}Dao;
+import ${basepackage}.${classNameLower}.model.${className};
+
+/**
+ * ${wzz_functionName}daoImpl
+ * @author ${wzz_classAuthor}
+ * @version ${wzz_classVersion}
+ */
+
+@Repository
+public class ${className}DaoImpl implements ${className}Dao{
+	
+
+	@Override
+	public boolean save(${className} ${classNameLower}) {
+		return ${classNameLower}.save();
+	}
+
+	@Override
+	public boolean update(${className} ${classNameLower}) {
+		return ${classNameLower}.update();
+	}
+
+	@Override
+	public Record getOne(Map<String, Object> condition) {
+		Vector<Object> params = new Vector<Object>();
+		StringBuffer sql = new StringBuffer("select * from ${table.sqlName} where 1 = 1 ");
+		
+		if(null != condition){
+			Object ${table.idColumn.sqlName} = condition.get("${table.idColumn.sqlName}");
+			if(null != ${table.idColumn.sqlName} && Tools.isNotEmpty(${table.idColumn.sqlName}.toString())){
+				sql.append(" and ${table.idColumn.sqlName} = ?");
+				params.add(${table.idColumn.sqlName});
+			}
+		}
+		
+		Record record = Db.findFirst(sql.toString(),params.toArray());
+		
+		return record;
+	}
+
+	@Override
+	public List<Record> getList(Map<String, Object> condition) {
+		Vector<Object> params = new Vector<Object>();
+		StringBuffer sql = new StringBuffer("select * from ${table.sqlName} where 1 = 1 ");
+		
+		if(null != condition){
+			
+	       <#list table.columns as column>               
+			Object ${column.sqlName} = condition.get("${column.sqlName}");
+			if(null != ${column.sqlName} && Tools.isNotEmpty(${column.sqlName}.toString())){
+				sql.append(" and ${column.sqlName} = ?");
+				params.add(${column.sqlName});
+			}
+	       </#list>
+	       
+			
+			//排序
+			Object orderby = condition.get("orderby");
+			if (null != orderby && Tools.isNotEmpty(orderby.toString())) {
+				sql.append(" order by " + orderby);
+			}
+			Object sort = condition.get("sort");
+			if (null != sort && Tools.isNotEmpty(sort.toString())) {
+				sql.append(" " + sort);
+			}
+		}
+		
+		List<Record> list = Db.find(sql.toString(),params.toArray());
+		
+		return list;
+	}
+
+	@Override
+	public boolean deleteByIds(String uuids)  {
+		Vector<Object> params = new Vector<Object>();
+		StringBuffer sql = new StringBuffer("delete from ${table.sqlName} where ${table.idColumn.sqlName} in ( ");
+		String[] uuidarray =  uuids.split(",");
+		for (int i = 0; i < uuidarray.length; i++) {
+			String uuid = uuidarray[i];
+			sql.append("?");
+			params.add(uuid);
+			if(i<uuidarray.length-1){
+				sql.append(",");
+			}
+		}
+		sql.append(" )");
+		boolean flag = Db.update(sql.toString(),params.toArray()) > 0 ? true : false;
+		
+		return flag;
+	}
+	
+	
+}

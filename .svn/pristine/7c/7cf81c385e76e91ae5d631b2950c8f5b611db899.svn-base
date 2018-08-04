@@ -1,0 +1,105 @@
+<#include "/macro.include"/>
+<#include "/custom.include">
+<#include "/java_copyright.include">
+<#assign className = table.className>   
+<#assign classNameFirstLower = className?uncap_first>   
+<#assign classNameLowerCase = className?lower_case>   
+<#assign pkJavaType = table.idColumn.javaType>   
+
+package ${basepackage}.${classNameFirstLower}.controller;
+
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import com.jfinal.aop.Before;
+import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.tx.Tx;
+import com.jfinal.plugin.spring.Inject;
+import com.jfinal.plugin.spring.IocInterceptor;
+import com.minstone.common.model.UserInfo;
+import com.minstone.common.sysparam.model.CommonSysParam;
+import com.minstone.common.sysparam.service.SysParamService;
+import com.minstone.common.util.ControllerException;
+import com.minstone.common.util.Tools;
+
+import com.minstone.pms.common.constant.Constant;
+import com.minstone.pms.common.helper.UserHelper;
+import com.minstone.pms.demo.model.Demo;
+import com.minstone.pms.indi.service.IndiService;
+
+
+import ${basepackage}.${classNameFirstLower}.service.${className}Service;
+import ${basepackage}.${classNameFirstLower}.model.${className};
+
+/**
+ * ${wzz_functionName} controller 
+ * @author ${wzz_classAuthor}
+ * @version ${wzz_classVersion}
+ */
+
+@Before(IocInterceptor.class)
+public class ${className}Controller extends Controller{
+	
+	/**
+	 * this loger  can be used by controller in anywhere . wzz
+	 */
+	//private Logger log = LoggerFactory.getLogger(${className}Controller.class);
+	
+	@Inject.BY_TYPE
+	private ${className}Service ${classNameFirstLower}Service;
+	
+
+	
+	
+	
+	//---------------------------------
+	/**
+	 * 获取  ${wzz_functionName}  列表信息
+	 * @return
+	 */
+	public void index() {
+		List<Record> ${classNameFirstLower}List =  ${classNameFirstLower}Service.getList();
+		
+		setAttr("${classNameFirstLower}List", ${classNameFirstLower}List);
+		
+		render("list_${classNameFirstLower}.jsp");
+	}
+	
+	
+	public void toForm(){
+		String uuid = getPara("${table.idColumn.sqlName}");
+		if(StringUtils.isNotBlank(uuid)){
+			Record ${classNameFirstLower} = ${classNameFirstLower}Service.getById(uuid);
+			setAttr("${classNameFirstLower}", ${classNameFirstLower});
+		}
+		
+		render("form_${classNameFirstLower}.jsp");
+	}
+	
+	@Before(Tx.class)
+	public void save( ){
+		${className} ${classNameFirstLower} = getModel(${className}.class);
+		
+		boolean flag = ${classNameFirstLower}Service.saveOrUpdate(${classNameFirstLower});
+		
+		renderJson(flag);
+	}
+	
+	@Before(Tx.class)
+	public void delete(){
+		String uuid = getPara("${table.idColumn.sqlName}");
+		
+		boolean flag = ${classNameFirstLower}Service.deleteByIds(uuid);
+		
+		renderJson(flag);
+	}
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,32 @@
+<#include "/macro.include"/>
+<#assign className = table.className>   
+<#assign classNameLower = className?uncap_first> 
+
+package ${basepackage}.${classNameLower}.model;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import com.jfinal.ext.kit.ModelExt;
+import com.jfinal.ext.plugin.tablebind.TableBind;
+import com.minstone.common.util.CommonInfoModel;
+import com.minstone.common.util.DateUtils;
+import com.minstone.common.util.StringUtils;
+import com.minstone.pms.indi.model.Indi;
+
+
+/**
+ * ${wzz_functionName}Entity
+ * @author ${wzz_classAuthor}
+ * @version ${wzz_classVersion}
+ */
+
+
+@TableBind(configName="app",pkName="${table.idColumn.sqlName}",tableName="${table.sqlName}")
+public class ${className} extends ModelExt<${className}> {
+	private static final long serialVersionUID = 1L;
+	public static final ${className} me = new ${className}();
+}
